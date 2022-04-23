@@ -40,10 +40,6 @@ public class MovieSearch {
         String info = movie.attr("class","info").text();
         String[] infoAttrs = info.split(" ");
 
-        StringBuilder name = null;
-        String year;
-        StringBuilder directors = null;
-        StringBuilder genres = null;
 //        name = infoAttrs[0];
         String infoAttrsString = null;
         for (int i = 0 ; i < infoAttrs.length; i++){
@@ -61,35 +57,45 @@ public class MovieSearch {
 
             if(infoAttrs[i]=="Directed"){
                 infoAttrsString+=infoAttrs[i] + infoAttrs[i+1];
-                int countDirector = 0;
-                if(infoAttrs[i]
-                char[] movieDirectorsAttr = new char[8+3+infoAttrs[i+2].length()+];
-                movieNameAttr = infoAttrs[2].toCharArray();
+                if(infoAttrs[i]=="/")
+                {
+                    infoAttrsString+=infoAttrs[i];
+                    if(infoAttrs[i]=="Genres:") {
+                        infoAttrsString+=infoAttrs[i];
+                        break;
+                    }
+                    infoAttrsString+=infoAttrs[i];
+                    if(infoAttrs[i]=="/") {
+                        infoAttrsString += infoAttrs[i];
+                    }
+                } else {
+                    break;
+                }
+
+                char[] movieDirectorsAttr = new char[8+3+infoAttrs[i+2].length()+infoAttrs[i+3].length()];
+                movieDirectorsAttr = infoAttrs[2].toCharArray();
+                infoAttrsString += String.valueOf(movieDirectorsAttr);
             }
-
-
         }
+        StringBuilder name = null;
+        String year;
+        StringBuilder directors = null;
+        StringBuilder genres = null;
         switch (infoAttrsString){
             case "Movie":
                 name = name.append("\n").append(infoAttrs[1]);
                 //continue;
             case "Directed by:":
-                String s = infoAttrs[].toString().split("");
-                directors = directors.;
+                directors = directors.append("\n").append(infoAttrs[1]);
             case "Genres:":
 
 
         }
-        for (int i = 0; i < Arrays.stream(infoAttrs).count(); i++){
-            if (infoAttrs[i].equals(" ")) infoAttrsString += "\n";
+        for (int i = 0; i < infoAttrs.length; i++){
+            if (infoAttrs[i].equals(" ")) infoAttrsString += "\n"{
 
+            }
         }
-
-        //;for (String attr : infoAttrs) {
-
-        //}
-
-
         Element firstMovieByQuery = searchResults.getElementsByAttributeValue("class","movie").first();
         String infoOfFirstMovie = firstMovieByQuery.attr("class","info").text();//attr("class","info")
         System.out.println(infoOfFirstMovie);
