@@ -3,14 +3,13 @@ package org.adonev.moviesearch;
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class MovieSearch extends Logger {
@@ -23,7 +22,7 @@ public class MovieSearch extends Logger {
     }
 
     public static void main(String[] args) throws IOException {
-
+        //TODO input URL
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter movie name: ");
         movieName = scanner.nextLine();
@@ -38,22 +37,24 @@ public class MovieSearch extends Logger {
                 .get();
         System.out.format("Current site: https://www.allmovie.com/search/all/%s\n",urlEncodedStr);
         Element searchResults = docConn.select("#cmn_wrap > div.content-container > div.content > div > ul").first();
-        Element movie = searchResults.children().first().attr("class","movie");
+        Elements movie = searchResults.children().attr("class","movie");
         String info = movie.attr("class","info").text();
 
         String[] infoAttrs = info.split(" ");
         String[] infoAttr = info.split("\\d{4}");
-        String str =  info.replaceAll("\\d{4}",infoAttrs[2])
-                .replace("Directed by:","Directed by:\n")
-                .replace("/","\n")
-                .replace("Genres:","\nGenres:\n");
+        String str =  info.replaceAll("Movie","\nMovie\n")
+                .replaceAll("Person","Person\n")
+                .replaceAll("Active:","Active\n")
+                .replaceAll("Directed by:","\nDirected by:\n")
+                .replaceAll("/","\n")
+                .replaceAll("Genres:","\nGenres:\n");
         System.out.println(str);
         LOG.log(Level.INFO,info);
 
-        Element firstMovieByQuery = searchResults.getElementsByAttributeValue("class","movie").first();
-        String infoOfFirstMovie = firstMovieByQuery.attr("class","info").text();//attr("class","info")
-        System.out.println("Also found - "+infoOfFirstMovie);
-        LOG.log(Level.INFO,infoOfFirstMovie);
+//        Element firstMovieByQuery = searchResults.getElementsByAttributeValue("class","movie").first();
+//        String infoOfFirstMovie = firstMovieByQuery.attr("class","info").text();//attr("class","info")
+//        System.out.println("Also found - "+infoOfFirstMovie);
+//        LOG.log(Level.INFO,infoOfFirstMovie);
         //* custom parsing attempt: mission failed (should've used StringBuilder)
 //        String parsedStr = "";
 //        int strCount=0;
