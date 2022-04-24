@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="moviesearch:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/moviesearch_jar</output-path>
+    <root id="archive" name="moviesearch.jar">
+      <element id="module-output" name="moviesearch" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/jsoup-1.14.3.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

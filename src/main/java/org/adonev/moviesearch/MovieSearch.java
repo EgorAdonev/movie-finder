@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -26,83 +27,58 @@ public class MovieSearch extends Logger {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter movie name: ");
         movieName = scanner.nextLine();
-        String urlEncodedStr=URLEncoder.encode(movieName);
+        String urlEncodedStr=URLEncoder.encode(movieName, StandardCharsets.UTF_8.name());
         if(movieName==null) {
             System.out.println("Movie name cannot be empty!");
         }
 
         Document docConn = Jsoup.connect("https://www.allmovie.com/search/all/"+urlEncodedStr)
-                .userAgent("Mozilla")
+                .userAgent("Chrome")
                 .timeout(5000)
                 .get();
         System.out.format("Current site: https://www.allmovie.com/search/all/%s\n",urlEncodedStr);
         Element searchResults = docConn.select("#cmn_wrap > div.content-container > div.content > div > ul").first();
-        //if(searchResults.hasClass("movie")){
         Element movie = searchResults.children().first().attr("class","movie");
         String info = movie.attr("class","info").text();
+
         String[] infoAttrs = info.split(" ");
-
-        String infoAttrsString = "";
-        for (int i = 0 ; i < infoAttrs.length - 1; i++){
-            String movieAttr = infoAttrs[0];
-            infoAttrsString = movieAttr;
-            infoAttrsString += "\n";
-
-            String movieNameAttr = infoAttrs[1];
-            infoAttrsString += movieNameAttr;
-            infoAttrsString += "\n";
-
-            char[] movieYearAttr = infoAttrs[2].toCharArray();
-            infoAttrsString+=String.valueOf(movieYearAttr);
-            infoAttrsString += "\n";
-            if(infoAttrs[i].equals("Directed")) {
-                String movieDirected = infoAttrs[i];
-                if (!infoAttrs[i].equals("Movie")) {
-                    String movieBy = infoAttrs[i+1];//spider
-                    infoAttrsString += movieDirected + movieBy;
-                    infoAttrsString += "\n";
-                    if (infoAttrs[i] == "/") {
-                        infoAttrsString += infoAttrs[i] + infoAttrs[i + 1];
-                        if (infoAttrs[i] == "Genres:") {
-                            infoAttrsString += infoAttrs[i];
-//                        break;
-                        }
-                    }
-                    infoAttrsString += infoAttrs[i];
-                }
-            }
-                else {
-                    continue;
-                }
-//                char[] movieDirectorsAttr = new char[8+3+infoAttrs[i+2].length()+infoAttrs[i+3].length()];
-//                movieDirectorsAttr = infoAttrs[2].toCharArray();
-//                infoAttrsString += String.valueOf(movieDirectorsAttr);
-//            }
-//            else {
-//                continue;
-//            }
-
-        }
-        System.out.println(infoAttrsString);
+        String[] infoAttr = info.split("\\d{4}");
+        String str =  info.replaceAll("\\d{4}",infoAttrs[2])
+                .replace("Directed by:","Directed by:\n")
+                .replace("/","\n")
+                .replace("Genres:","\nGenres:\n");
+        System.out.println(str);
         LOG.log(Level.INFO,info);
-//        StringBuilder name = null;
-//        String year;
-//        StringBuilder directors = null;
-//        StringBuilder genres = null;
-//        switch (info){
-//            case "Movie":
-//                name = name.append("\n").append(infoAttrs[1]);
-//                //continue;
-//            case "Directed by:":
-//                directors = directors.append("\n").append(infoAttrs[6]).append(infoAttrs[7]);
-//            case "Genres:":
-//        }
-//        for (int i = 0; i < infoAttrs.length - 1; i++){
-//
-//        }
+
         Element firstMovieByQuery = searchResults.getElementsByAttributeValue("class","movie").first();
         String infoOfFirstMovie = firstMovieByQuery.attr("class","info").text();//attr("class","info")
-        System.out.println(infoOfFirstMovie);
-
+        System.out.println("Also found - "+infoOfFirstMovie);
+        LOG.log(Level.INFO,infoOfFirstMovie);
+        //* custom parsing attempt: mission failed (should've used StringBuilder)
+//        String parsedStr = "";
+//        int strCount=0;
+//        while(strCount < infoAttrs.length-1) {
+//            strCount++;
+//            boolean hasNextDirector = infoAttrs[strCount].equals("/") && strCount < infoAttrs.length-1;
+//            boolean joinByWithIfDirected = infoAttrs[strCount].equals("Directed") && infoAttrs[strCount+1].equals("by:") && strCount < infoAttrs.length-1;
+//            boolean isGenre = infoAttrs[strCount].equals("Genres");
+//            boolean isFullName = infoAttrs[strCount].equals("/") && infoAttrs[strCount+3].equals("/") && strCount < infoAttrs.length-1 ;
+//            if(hasNextDirector) {
+//                parsedStr += infoAttrs[strCount+1]+infoAttrs[strCount+2];
+//                continue;
+//            }
+//            else if (joinByWithIfDirected) {
+//                parsedStr += infoAttrs[strCount];
+//                parsedStr += " " + infoAttrs[strCount+1] + " ";
+//            } else if (isFullName) {
+//                parsedStr +=  infoAttrs[strCount+1];
+//                parsedStr += " " + infoAttrs[strCount+2] + " ";
+//            } else if (infoAttrs[strCount].equals("Movie")) {
+//                parsedStr += infoAttrs[strCount] + " ";
+//            } else {
+//                parsedStr += "\n";
+//            }
+//            //insert default parse condition
+//        }
     }
 }
